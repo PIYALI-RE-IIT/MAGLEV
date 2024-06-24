@@ -112,13 +112,13 @@
 	
 	function IB(){
 		setTimeout(function(){
-		alert('Successfull completion of build procedure for the model:Maglev_PID');	
+		alert('Successfull completion of build procedure for the model : Maglev_PID');	
 		},2000)
 		
 	}
 	function CT(){		
 		setTimeout(function() {
-			alert('Model Maglev_PID loaded');
+			alert('Model Maglev_PID is loaded');
          document.getElementById('run_btn').style.display  = "block";
          document.getElementById('m_scope').style.display  = "block";
 		 document.getElementById('v_scope').style.display  = "block";		 
@@ -261,28 +261,41 @@ function drop(ev) {
   }
   
 }
+///////////////////////////PD+PID////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	
-	function PID_STEP(){///////////for amplitude in meter//////////////
-		
+
+		  
+/*function MAGLEV_STEP(){
 	var i = math.sqrt(-1);
-	var y = new Array();
-    var yop = new Array();	
+	document.getElementById('exportChart').style.display="block";
+	var y = new Array();	
 	var dataPoints=[];
-	var dataOPPoints=[];
 	
-	var totalT = document.getElementById('totaltime').value;
-	var stepT  = document.getElementById('steptime').value;
-	var vp = document.getElementById('stepsize').value;
+	for (var t=0;t<=50;t+=0.1){
+	/////////////////////////////////////PD STEP RESPONSE UPTO 15 SEC//////////////////////	
+	for( var t=0; t<=15;t+=0.1){
+     
+	 var totalfrstprt_pd = 1.41907;
+	var num2_pd = math.complex(0.709535,0.347901);
+	var expcomp1_pd = math.complex(-55.365,-46.2246);
+	var expcomp1t_pd = math.multiply(expcomp1_pd,t);
+	var exp1_pd = math.pow(math.e,expcomp1t_pd);
+	var num3_pd = math.complex(0.612361,-0.790578);
+	var expcomp2_pd = math.complex(0,92.4493);
+	var expcomp2t_pd = math.multiply(expcomp2_pd,t);
+	var exp2_pd = math.pow(math.e,expcomp2t_pd);
+	var scndprt3_pd = math.add(num3_pd,exp2_pd);
+	var totalscndprt_pd = math.multiply(num2_pd,exp1_pd,scndprt3_pd);
 	
+	y[t] = math.subtract(totalfrstprt_pd,totalscndprt_pd);//assuming step size 1v i.e 0.006m or approximately 0.01m.
+	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in paper the sensor gain or v-m relation is = 143.14v/m i.e 144.14v = 1m OR 1v = 1/144.14 m,now in m
 	
-	
-	for( var t=0; t<=totalT; t+=0.1){
-	
-	for( var t=0; t<=stepT;t+=0.1 ){////20 sec is sample time
-	
-	var num1_pid = math.complex(-0.721536 , -0.356075 );
+    } 
+	 /////////////////////////////////////PID STEP RESPONSE AFTER 15 SEC TO 50 SEC//////////////////////
+	 for(  t=15; t<=50;t+=0.1){
+		 
+	 var num1_pid = math.complex(-0.721536 , -0.356075 );
 	 var num2_pid = math.complex(-54.7083  , -45.4455  );
 	 var num3_pid = math.complex(0.608315,-0.793696);
 	 var num4_pid = math.complex(0,90.891);	 
@@ -297,12 +310,161 @@ function drop(ev) {
 	
 	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
 	
-	var exp3_pid = math.pow(math.e,math.multiply(-1.31345 , t));
-	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);	
+	var exp3_pid = math.pow(math.e,(-1.31345 * t));
+	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);
 	
+	y[t]= (totalfrstprt_pid+totalscndprt_pid+1);//assuming step size 1v.
+	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in m the gain is 143.14v/m,now in m
+		 
+	 
+	 //document.write (totalscndprt);
+	 }
+	}
+	 var chart = new CanvasJS.Chart("chartContainer",
+    {
+      animationEnabled: true,
+		  animationDuration: 10000, 
+	  title:{
+      text: "Step Response of MAGLEV Plant"
+	  
+      },
+	  
+	  axisX:{
+        interlacedColor: "#E0FDE4",
+        title: "Time(Sec)"
+      },
+	  axisY: {
+            title: "Amplitude(m)",
+			
+			maximum:0.08,
+        },
+      data: [
+      {        
+        type: "spline",
+		color:"#49C258",
+        dataPoints:dataPoints
+	
+	//document.getElementById('chk_complex_numbers').value = c;
+}
+      ]
+    });
+
+    chart.render();
+	document.getElementById("exportChart").addEventListener("click",function(){
+	chart.exportChart({format: "jpg"})});
+  	
+}
+//////////////////////Maglev PD control for step input//////////
+
+/*function PD_Step_Plot(){
+	
+	var i = math.sqrt(-1);
+	var y = new Array();	
+	var dataPoints=[];
+	
+	for( var t=0; t<=50;t+=0.1){
+	var totalfrstprt = 1.41907;
+	var num2 = math.complex(0.709535,0.347901);
+	var expcomp1 = math.complex(-55.365,-46.2246);
+	var expcomp1t = math.multiply(expcomp1,t);
+	var exp1 = math.pow(math.e,expcomp1t);
+	var num3 = math.complex(0.612361,-0.790578);
+	var expcomp2 = math.complex(0,92.4493);
+	var expcomp2t = math.multiply(expcomp2,t);
+	var exp2 = math.pow(math.e,expcomp2t);
+	var scndprt3 = math.add(num3,exp2);
+	var totalscndprt = math.multiply(num2,exp1,scndprt3);
+	y[t] = 1*(math.subtract(totalfrstprt,totalscndprt));//assuming step size 1v.
+	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in m the gain is 143.14v/m
+		 
+	 
+	 //document.write (totalscndprt);
+	 }
+	 var chart = new CanvasJS.Chart("chartContainer",
+    {
+      animationEnabled: true,
+		  animationDuration: 10000, 
+	  title:{
+      text: "Step Response of MAGLEV Plant with "
+	  
+      },
+	  
+	  axisX:{
+        interlacedColor: "#E0FDE4",
+        title: "Time(Sec)"
+      },
+	  axisY: {
+            title: "Amplitude(m)",
+			
+			//maximum:0.0018,
+        },
+      data: [
+      {        
+        type: "spline",
+		color:"#49C258",
+        dataPoints:dataPoints
+	
+	//document.getElementById('chk_complex_numbers').value = c;
+}
+      ]
+    });
+
+    chart.render();
+}
+*/	
+	
+
+	
+	function PID_STEP(){///////////for amplitude in meter//////////////
+		
+	var i = math.sqrt(-1);
+	var y = new Array();
+    var yop = new Array();	
+	var dataPoints=[];
+	var dataOPPoints=[];
+	
+	var totalT = document.getElementById('totaltime').value;
+	var stepT  = document.getElementById('steptime').value;
+	var vp = document.getElementById('stepsize').value;
+	
+	///maglev parameters
+	var b = -3691;
+	var psqr = 2180;
+	
+	var pconst = -document.getElementById('kp').value;
+	var iconst = -document.getElementById('ki').value;
+	var dconst = -document.getElementById('kd').value;
+	
+	var k = math.multiply(b,iconst);
+	var sconst = math.subtract(math.multiply(b,pconst),psqr);
+	var sqrconst = math.multiply(b,dconst);
+	
+	var roots = math.polynomialRoot(k,sconst,sqrconst,1);
+	var pol1 = roots[0];
+	var pol2 = roots[1];
+	var pol3 = roots[2];
+	
+	var rhs_step = math.multiply(vp,b,iconst);
+	var rhs_pol1 = math.multiply(vp,b,math.add(math.multiply(dconst,math.pow(pol1,2)),math.multiply(pconst,pol1),iconst));
+	var rhs_pol2 = math.multiply(vp,b,math.add(math.multiply(dconst,math.pow(pol2,2)),math.multiply(pconst,pol2),iconst));
+	var rhs_pol3 = math.multiply(vp,b,math.add(math.multiply(dconst,math.pow(pol3,2)),math.multiply(pconst,pol3),iconst));
+	
+	var coeff1 = math.divide(rhs_step,math.multiply(math.subtract(0,pol1),math.subtract(0,pol2),math.subtract(0,pol3)));
+	var coeff2 = math.divide(rhs_pol1,math.multiply(pol1,math.subtract(pol1,pol2),math.subtract(pol1,pol3)));
+	var coeff3 = math.divide(rhs_pol2,math.multiply(pol2,math.subtract(pol2,pol1),math.subtract(pol2,pol3)));
+	var coeff4 = math.divide(rhs_pol3,math.multiply(pol3,math.subtract(pol3,pol1),math.subtract(pol3,pol2)));
+	
+	for( var t=0; t<=totalT; t+=0.1){
+	
+	for( var t=0.1; t<=stepT;t+=0.1 ){////20 sec is sample time
+	
+	var part1 = coeff1;
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
 	y[t]= vp;//assuming step size 1v.Input plot
-	yop[t]= math.multiply(vp,math.add(totalfrstprt_pid,totalscndprt_pid,1));//assuming step size 1v.Output plot
+	yop[t]= (math.add(part1,part2,part3,part4)).re;
 	
 	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in m the gain is 143.14v/m,now in m
 	dataOPPoints.push({x:(t), y:(yop[t]/143.14)});///yop[t] was in v, in m the gain is 143.14v/m,now in m	 
@@ -332,11 +494,11 @@ function drop(ev) {
 	  
 	  axisX:{
         interlacedColor: "#DFDEDE",
-        title: "Time(Sec)"
+        title: "Time (sec)"
       },
     axisY: [
 	      {/////output Y axis
-            title: "Amplitude(m)",
+            title: "Amplitude (m)",
 			
 			//maximum:0.03,
         },
@@ -350,13 +512,17 @@ function drop(ev) {
 		}
 		],
 	data: [
-      {        
+      { 
+		showInLegend: true,
+		legendText: "Output Curve",
         type: "spline",
 		color:"black",
         dataPoints:dataOPPoints
 	
        },
-       {        
+       { 
+		showInLegend: true,
+		legendText: "Input Curve",
         type: "spline",
 		color:"red",
         dataPoints:dataPoints
@@ -386,36 +552,47 @@ function drop(ev) {
 	var stepT  = document.getElementById('steptime').value;
 	var vp = document.getElementById('stepsize').value;
 	
+	///maglev parameters
+	var b = -3691;
+	var psqr = 2180;
 	
+	var pconst = -document.getElementById('kp').value;
+	var iconst = -document.getElementById('ki').value;
+	var dconst = -document.getElementById('kd').value;
 	
-	for( var t=0; t<=totalT;t+=0.1){
+	var k = math.multiply(b,iconst);
+	var sconst = math.subtract(math.multiply(b,pconst),psqr);
+	var sqrconst = math.multiply(b,dconst);
 	
-	for( var t=0; t<=stepT;t+=0.1){////20 sec is sample time
+	var roots = math.polynomialRoot(k,sconst,sqrconst,1);
+	var pol1 = roots[0];
+	var pol2 = roots[1];
+	var pol3 = roots[2];
 	
-	var num1_pid = math.complex(-0.721536 , -0.356075 );
-	 var num2_pid = math.complex(-54.7083  , -45.4455  );
-	 var num3_pid = math.complex(0.608315,-0.793696);
-	 var num4_pid = math.complex(0,90.891);	 
+	var rhs_step = math.multiply(vp,b,iconst);
+	var rhs_pol1 = math.multiply(vp,b,math.add(math.multiply(dconst,math.pow(pol1,2)),math.multiply(pconst,pol1),iconst));
+	var rhs_pol2 = math.multiply(vp,b,math.add(math.multiply(dconst,math.pow(pol2,2)),math.multiply(pconst,pol2),iconst));
+	var rhs_pol3 = math.multiply(vp,b,math.add(math.multiply(dconst,math.pow(pol3,2)),math.multiply(pconst,pol3),iconst));
 	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var scndcomp_pid = math.add(num3_pid,exp2_pid);
+	var coeff1 = math.divide(rhs_step,math.multiply(math.subtract(0,pol1),math.subtract(0,pol2),math.subtract(0,pol3)));
+	var coeff2 = math.divide(rhs_pol1,math.multiply(pol1,math.subtract(pol1,pol2),math.subtract(pol1,pol3)));
+	var coeff3 = math.divide(rhs_pol2,math.multiply(pol2,math.subtract(pol2,pol1),math.subtract(pol2,pol3)));
+	var coeff4 = math.divide(rhs_pol3,math.multiply(pol3,math.subtract(pol3,pol1),math.subtract(pol3,pol2)));
 	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
+	for( var t=0; t<=totalT; t+=0.1){
 	
-	var exp3_pid = math.pow(math.e,math.multiply(-1.31345 , t));
-	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);	
+	for( var t=0.1; t<=stepT;t+=0.1 ){////20 sec is sample time
 	
+	var part1 = coeff1;
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
 	y[t]= vp;//assuming step size 1v.Input plot
-	yop[t]= math.multiply(vp,math.add(totalfrstprt_pid,totalscndprt_pid,1));//assuming step size 1v.Output plot
+	yop[t]= (math.add(part1,part2,part3,part4)).re;
 	
-	dataPoints.push({x:(t), y:(y[t]*1000)});///y[t] is in v
-	dataOPPoints.push({x:(t), y:(yop[t]*1000)});///yop[t] is in v	 
+	dataPoints.push({x:(t), y:(y[t]*1000)});///y[t] was in v, in m the gain is 143.14v/m,now in m
+	dataOPPoints.push({x:(t), y:(yop[t]*1000)});///yop[t] was in v, in m the gain is 143.14v/m,now in m	 
 	 
 	 //document.write (totalscndprt);
 	 }
@@ -442,11 +619,11 @@ document.getElementById('chartContainer').style.display  = "block";
 	  
 	  axisX:{
         interlacedColor: "#DFDEDE",
-        title: "Time(Sec)"
+        title: "Time (sec)"
       },
     axisY: [
 	      {/////output Y axis
-            title: "Amplitude(mv)",
+            title: "Amplitude (mV)",
 			
 			//maximum:6,
         },
@@ -460,13 +637,17 @@ document.getElementById('chartContainer').style.display  = "block";
 		}
 		],
 	data: [
-      {        
+      {
+		showInLegend: true,
+		legendText: "Output Curve",
         type: "spline",
 		color:"black",
         dataPoints:dataOPPoints
 	
        },
-       {        
+       {
+		showInLegend: true,
+		legendText: "Input Curve",
         type: "spline",
 		color:"red",
         dataPoints:dataPoints
@@ -498,52 +679,47 @@ document.getElementById("result").style.display = "block";
 	var totalT = document.getElementById('totaltime').value;
 	var sinv  = document.getElementById('sinamp').value;
 	var sinf = document.getElementById('sinfreq').value;
+	var omega = math.multiply(2,math.pi,sinf);
+	var omega2 = math.pow(omega,2);
 	
+	///maglev parameters
+	var b = -3691;
+	var psqr = 2180;
+	
+	var pconst = -document.getElementById('kp').value;
+	var iconst = -document.getElementById('ki').value;
+	var dconst = -document.getElementById('kd').value;
+	
+	var k = math.multiply(b,iconst);
+	var sconst = math.subtract(math.multiply(b,pconst),psqr);
+	var sqrconst = math.multiply(b,dconst);
+	
+	var roots = math.polynomialRoot(k,sconst,sqrconst,1);
+	var pol1 = roots[0];
+	var pol2 = roots[1];
+	var pol3 = roots[2];
+	
+	var rhs_sine = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(math.multiply(i,omega),2)),math.multiply(pconst,math.multiply(i,omega)),iconst));
+	var rhs_pol1 = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(pol1,2)),math.multiply(pconst,pol1),iconst));
+	var rhs_pol2 = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(pol2,2)),math.multiply(pconst,pol2),iconst));
+	var rhs_pol3 = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(pol3,2)),math.multiply(pconst,pol3),iconst));
+	
+	var coeff1 = math.divide(rhs_sine,math.multiply(math.subtract(math.multiply(i,omega),pol1),math.subtract(math.multiply(i,omega),pol2),math.subtract(math.multiply(i,omega),pol3)));
+	var coeff2 = math.divide(rhs_pol1,math.multiply(math.add(math.pow(pol1,2),omega2),math.subtract(pol1,pol2),math.subtract(pol1,pol3)));
+	var coeff3 = math.divide(rhs_pol2,math.multiply(math.add(math.pow(pol2,2),omega2),math.subtract(pol2,pol1),math.subtract(pol2,pol3)));
+	var coeff4 = math.divide(rhs_pol3,math.multiply(math.add(math.pow(pol3,2),omega2),math.subtract(pol3,pol1),math.subtract(pol3,pol2)));
 	
 	
 	for( var t=0; t<=totalT;t+=0.1){	
 	
-	var num1_pid = math.complex(0.219288 ,0.0204671 );
-	 var num2_pid = math.complex(0  , -3.142 );
-	 
-	 var num3_pid = math.complex(0.185056,0.982728);
-	 var num4_pid = math.complex(0,6.284);	
-
-    var num5_pid = math.complex(0.00462287,0.0103211);
-    var num6_pid = math.complex(-54.7083,-45.4455);
-    var num7_pid = math.complex(0,90.891);
-    var num8_pid = math.complex(-0.665809,-0.746122);
-
-	var mul_pid = math.complex(0,1.0);
-    //var num10_pid = 0.0501799*(math.pow(math.e,(-1.31345*t)));
-    	
+	var part1 = math.multiply(math.divide(coeff1,omega),math.sin(math.multiply(omega,t)));
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var comp1 = math.multiply(mul_pid,exp2_pid);
-	var scndcomp_pid = math.subtract(num3_pid,comp1);	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
+	y[t]= math.multiply(sinv , math.sin(math.multiply(2,math.pi, sinf ,t)));//assuming sine amp of 0.5v .Input plot
 	
-	var epow3_pid = math.multiply(num6_pid,t);
-	var exp3_pid  = math.pow(math.e,epow3_pid);
-	var thrdcomp_pid = math.multiply(num5_pid,exp3_pid);
-	var epow4_pid = math.multiply(num7_pid,t);
-	var exp4_pid  = math.pow(math.e,epow4_pid);
-	var frthcomp_pid = math.add(exp4_pid,num8_pid);
-	var totalscndprt_pid = math.multiply(thrdcomp_pid , frthcomp_pid);
-	
-	var epow5_pid = math.multiply(-1.31345,t);
-	var exp5_pid = math.pow(math.e,epow5_pid);
-	var totalthrdprt_pid = math.multiply(-0.0501799,exp5_pid);	
-	var gain = math.divide(sinv,2);
-	
-	y[t]= math.multiply(gain , math.sin(math.multiply(2,math.pi, sinf ,t)));//assuming sine amp of 0.5v .Input plot
-	var op = math.multiply(math.multiply(2,math.pi,sinf,gain),(math.add(totalfrstprt_pid,totalscndprt_pid,totalthrdprt_pid)));//output sine
-	yop[t] = op.re;
+	yop[t] = (math.add(part1,part2,part3,part4)).re;
 	
 	
 	//document.write("<br/>"+yop[t]);
@@ -565,11 +741,11 @@ document.getElementById("result").style.display = "block";
 	  
 	  axisX:{
         interlacedColor: "#DFDEDE",
-        title: "Time(Sec)"
+        title: "Time (sec)"
       },
     axisY: [
 	      {/////output Y axis
-            title: "Amplitude(m)",
+            title: "Amplitude (m)",
 			
 			//maximum:0.03,
         },
@@ -583,13 +759,17 @@ document.getElementById("result").style.display = "block";
 		}
 		],
 	data: [
-      {        
+      { 
+		showInLegend: true,
+		legendText: "Output Curve",
         type: "spline",
 		color:"black",
         dataPoints:dataOPPoints
 	
        },
-       {        
+       { 
+		showInLegend: true,
+		legendText: "Input Curve",
         type: "spline",
 		color:"red",
         dataPoints:dataPoints
@@ -619,50 +799,47 @@ document.getElementById("exportChart").style.display = "block";
 	var sinv  = document.getElementById('sinamp').value;
 	var sinf = document.getElementById('sinfreq').value;
 	
+	var omega = math.multiply(2,math.pi,sinf);
+	var omega2 = math.pow(omega,2);
+	
+	///maglev parameters
+	var b = -3691;
+	var psqr = 2180;
+	
+	var pconst = -document.getElementById('kp').value;
+	var iconst = -document.getElementById('ki').value;
+	var dconst = -document.getElementById('kd').value;
+	
+	var k = math.multiply(b,iconst);
+	var sconst = math.subtract(math.multiply(b,pconst),psqr);
+	var sqrconst = math.multiply(b,dconst);
+	
+	var roots = math.polynomialRoot(k,sconst,sqrconst,1);
+	var pol1 = roots[0];
+	var pol2 = roots[1];
+	var pol3 = roots[2];
+	
+	var rhs_sine = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(math.multiply(i,omega),2)),math.multiply(pconst,math.multiply(i,omega)),iconst));
+	var rhs_pol1 = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(pol1,2)),math.multiply(pconst,pol1),iconst));
+	var rhs_pol2 = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(pol2,2)),math.multiply(pconst,pol2),iconst));
+	var rhs_pol3 = math.multiply(sinv,omega,b,math.add(math.multiply(dconst,math.pow(pol3,2)),math.multiply(pconst,pol3),iconst));
+	
+	var coeff1 = math.divide(rhs_sine,math.multiply(math.subtract(math.multiply(i,omega),pol1),math.subtract(math.multiply(i,omega),pol2),math.subtract(math.multiply(i,omega),pol3)));
+	var coeff2 = math.divide(rhs_pol1,math.multiply(math.add(math.pow(pol1,2),omega2),math.subtract(pol1,pol2),math.subtract(pol1,pol3)));
+	var coeff3 = math.divide(rhs_pol2,math.multiply(math.add(math.pow(pol2,2),omega2),math.subtract(pol2,pol1),math.subtract(pol2,pol3)));
+	var coeff4 = math.divide(rhs_pol3,math.multiply(math.add(math.pow(pol3,2),omega2),math.subtract(pol3,pol1),math.subtract(pol3,pol2)));
+	
 	
 	for( var t=0; t<=totalT;t+=0.1){	
 	
-	var num1_pid = math.complex(0.219288 ,0.0204671 );
-	 var num2_pid = math.complex(0  , -3.142 );
-	 
-	 var num3_pid = math.complex(0.185056,0.982728);
-	 var num4_pid = math.complex(0,6.284);	
-
-    var num5_pid = math.complex(0.00462287,0.0103211);
-    var num6_pid = math.complex(-54.7083,-45.4455);
-    var num7_pid = math.complex(0,90.891);
-    var num8_pid = math.complex(-0.665809,-0.746122);
-
-	var mul_pid = math.complex(0,1.0);
-    //var num10_pid = 0.0501799*(math.pow(math.e,(-1.31345*t)));
-    	
+	var part1 = math.multiply(math.divide(coeff1,omega),math.sin(math.multiply(omega,t)));
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var comp1 = math.multiply(mul_pid,exp2_pid);
-	var scndcomp_pid = math.subtract(num3_pid,comp1);	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
+	y[t]= math.multiply(sinv , math.sin(math.multiply(2,math.pi, sinf ,t)));//assuming sine amp of 0.5v .Input plot
 	
-	var epow3_pid = math.multiply(num6_pid,t);
-	var exp3_pid  = math.pow(math.e,epow3_pid);
-	var thrdcomp_pid = math.multiply(num5_pid,exp3_pid);
-	var epow4_pid = math.multiply(num7_pid,t);
-	var exp4_pid  = math.pow(math.e,epow4_pid);
-	var frthcomp_pid = math.add(exp4_pid,num8_pid);
-	var totalscndprt_pid = math.multiply(thrdcomp_pid , frthcomp_pid);
-	
-	var epow5_pid = math.multiply(-1.31345,t);
-	var exp5_pid = math.pow(math.e,epow5_pid);
-	var totalthrdprt_pid = math.multiply(-0.0501799,exp5_pid);	
-	var gain = math.divide(sinv,2);
-	
-	y[t]= math.multiply(gain , math.sin(math.multiply(2,math.pi, sinf ,t)));//assuming sine amp of 1v p-p.Input plot
-	var op = math.multiply(math.multiply(2,math.pi,sinf,gain),(math.add(totalfrstprt_pid,totalscndprt_pid,totalthrdprt_pid)));//output sine
-	yop[t] = op.re;
+	yop[t] = (math.add(part1,part2,part3,part4)).re;
 	
 	
 	//document.write("<br/>"+yop[t]);
@@ -684,11 +861,11 @@ document.getElementById("exportChart").style.display = "block";
 	  
 	  axisX:{
         interlacedColor: "#DFDEDE",
-        title: "Time(Sec)"
+        title: "Time (sec)"
       },
     axisY: [
 	      {/////output Y axis
-            title: "Amplitude(v)",
+            title: "Amplitude (V)",
 			
 			//maximum:6,
         },
@@ -702,13 +879,17 @@ document.getElementById("exportChart").style.display = "block";
 		}
 		],
 	data: [
-      {        
+      {
+		showInLegend: true,
+		legendText: "Output Curve",
         type: "spline",
 		color:"black",
         dataPoints:dataOPPoints
 	
        },
-       {        
+       {
+		showInLegend: true,
+		legendText: "Input Curve",
         type: "spline",
 		color:"red",
         dataPoints:dataPoints
@@ -743,43 +924,58 @@ document.getElementById("exportChart").style.display = "block";
 	var cycles = math.divide(totalT,tperiod);
 	var cyclehlfs = math.multiply(cycles,2);
 	
+	///maglev parameters
+	var b = -3691;
+	var psqr = 2180;
+	
+	var pconst = -document.getElementById('kp').value;
+	var iconst = -document.getElementById('ki').value;
+	var dconst = -document.getElementById('kd').value;
+	
+	var k = math.multiply(b,iconst);
+	var sconst = math.subtract(math.multiply(b,pconst),psqr);
+	var sqrconst = math.multiply(b,dconst);
+	
+	var roots = math.polynomialRoot(k,sconst,sqrconst,1);
+	var pol1 = roots[0];
+	var pol2 = roots[1];
+	var pol3 = roots[2];
+	
+	var rhs_step = math.multiply(sqrv,b,iconst);
+	var rhs_pol1 = math.multiply(sqrv,b,math.add(math.multiply(dconst,math.pow(pol1,2)),math.multiply(pconst,pol1),iconst));
+	var rhs_pol2 = math.multiply(sqrv,b,math.add(math.multiply(dconst,math.pow(pol2,2)),math.multiply(pconst,pol2),iconst));
+	var rhs_pol3 = math.multiply(sqrv,b,math.add(math.multiply(dconst,math.pow(pol3,2)),math.multiply(pconst,pol3),iconst));
+	
+	var coeff1 = math.divide(rhs_step,math.multiply(math.subtract(0,pol1),math.subtract(0,pol2),math.subtract(0,pol3)));
+	var coeff2 = math.divide(rhs_pol1,math.multiply(pol1,math.subtract(pol1,pol2),math.subtract(pol1,pol3)));
+	var coeff3 = math.divide(rhs_pol2,math.multiply(pol2,math.subtract(pol2,pol1),math.subtract(pol2,pol3)));
+	var coeff4 = math.divide(rhs_pol3,math.multiply(pol3,math.subtract(pol3,pol1),math.subtract(pol3,pol2)));
+	
+	
+	
 	//for( var t=0; t<=totalT;t+=0.1){
 	
-	//for( var t=0; t<= math.divide(totalT,4) ; t+=0.1){////20 sec is sample time
+	//for( var t=0.1; t<= math.divide(totalT,4) ; t+=0.1){////20 sec is sample time
 	
 	for (var nc = 0; nc < math.divide(cyclehlfs,2); nc+=1) {
     for (var t = math.multiply(nc,tperiod); t <= math.multiply(math.add(math.multiply(nc,2),1),math.divide(totalT,cyclehlfs)); t++) {
-	
-	var num1_pid = math.complex(-0.721536 , -0.356075 );
-	 var num2_pid = math.complex(-54.7083  , -45.4455  );
-	 var num3_pid = math.complex(0.608315,-0.793696);
-	 var num4_pid = math.complex(0,90.891);	 
-	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var scndcomp_pid = math.add(num3_pid,exp2_pid);
-	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
-	
-	var exp3_pid = math.pow(math.e,math.multiply(-1.31345 , t));
-	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);	
-	
+		
+	var part1 = coeff1;
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
 	y[t]= sqrv;//assuming step size 1v.Input plot
-	yop[t]= math.multiply(sqrv,math.add(totalfrstprt_pid,totalscndprt_pid,1));//assuming step size 1v.Output plot
+	yop[t]= (math.add(part1,part2,part3,part4)).re;
 	
-	dataPoints.push({x:(t), y:(y[t]*1000)});///y[t] is in v
-	dataOPPoints.push({x:(t), y:(yop[t]*1000)});///yop[t] is in v	 
+	dataPoints.push({x:(t), y:(y[t]*1000)});///y[t] was in v, in m the gain is 143.14v/m,now in m
+	dataOPPoints.push({x:(t), y:(yop[t]*1000)});///yop[t] was in v, in m the gain is 143.14v/m,now in m	 
 	 
-	 //document.write (totalscndprt);
 	 }
+	 
 	 //for( var t= math.divide(totalT,4); t<= math.divide(totalT,2); t++){////20 sec is sample time
 	 for (var t = math.multiply(math.add(math.multiply(nc,2),1),math.divide(totalT,cyclehlfs)); t<= math.multiply(2,math.divide(totalT,cyclehlfs),math.add(((2*nc)/2),1)); t++) {
-	
+		
 	y[t]= 0;//assuming final value of 0v.Input plot
 	yop[t]=0;//assuming final value of 0v.Output plot
 	dataPoints.push({x:(t), y:(y[t])});///y[t] is in v
@@ -788,35 +984,20 @@ document.getElementById("exportChart").style.display = "block";
 	 //document.write (totalscndprt);
 	 }
 	 }
-	 
+	
 	/* for( var t= math.divide(totalT,2); t<= math.divide(math.multiply(3,totalT),4) ; t+=0.1){////20 sec is sample time
 	
-	var num1_pid = math.complex(-0.721536 , -0.356075 );
-	 var num2_pid = math.complex(-54.7083  , -45.4455  );
-	 var num3_pid = math.complex(0.608315,-0.793696);
-	 var num4_pid = math.complex(0,90.891);	 
-	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var scndcomp_pid = math.add(num3_pid,exp2_pid);
-	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
-	
-	var exp3_pid = math.pow(math.e,math.multiply(-1.31345 , t));
-	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);	
-	
+	var part1 = coeff1;
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
 	y[t]= sqrv;//assuming step size 1v.Input plot
-	yop[t]= math.multiply(sqrv,math.add(totalfrstprt_pid,totalscndprt_pid,1));//assuming step size 1v.Output plot
+	yop[t]= (math.add(part1,part2,part3,part4)).re;
 	
-	dataPoints.push({x:(t), y:(y[t]*1000)});///y[t] is in v
-	dataOPPoints.push({x:(t), y:(yop[t]*1000)});///yop[t] is in v	 
+	dataPoints.push({x:(t), y:(y[t]*1000)});///y[t] was in v, in m the gain is 143.14v/m,now in m
+	dataOPPoints.push({x:(t), y:(yop[t]*1000)});///yop[t] was in v, in m the gain is 143.14v/m,now in m	 
 	 
-	 //document.write (totalscndprt);
 	 } 
 	 
 	for( var t= math.divide(math.multiply(3,totalT),4); t<= totalT; t++){////20 sec is sample time
@@ -828,9 +1009,9 @@ document.getElementById("exportChart").style.display = "block";
 	 
 	 //document.write (totalscndprt);
 	 } 
-	 */
+	
 	 
-	//}
+	} */
 document.getElementById('plotbucket').style.display  = "block"; 	
 document.getElementById('chartContainer').style.display  = "block"; 	
 	var chart = new CanvasJS.Chart("chartContainer",
@@ -844,11 +1025,11 @@ document.getElementById('chartContainer').style.display  = "block";
 	  
 	  axisX:{
         interlacedColor: "#DFDEDE",
-        title: "Time(Sec)"
+        title: "Time (sec)"
       },
     axisY: [
 	      {/////output Y axis
-            title: "Amplitude(mv)",
+            title: "Amplitude (mV)",
 			
 			//maximum:6,
         },
@@ -862,13 +1043,17 @@ document.getElementById('chartContainer').style.display  = "block";
 		}
 		],
 	data: [
-      {        
+      {
+		showInLegend: true,
+		legendText: "Output Curve",
         type: "spline",
 		color:"black",
         dataPoints:dataOPPoints
 	
        },
-       {        
+       { 
+		showInLegend: true,
+		legendText: "Input Curve",
         type: "spline",
 		color:"red",
         dataPoints:dataPoints
@@ -897,42 +1082,63 @@ document.getElementById("result").style.display = "block";
 	
 	var totalT = document.getElementById('totaltime').value;
 	var sqrv  = document.getElementById('sqramp').value;
+	var sqrf  = document.getElementById('sqrfreq').value;///new addition
+	
+	var tperiod = math.divide(1,sqrf);
+	var cycles = math.divide(totalT,tperiod);
+	var cyclehlfs = math.multiply(cycles,2);
+	
+	///maglev parameters
+	var b = -3691;
+	var psqr = 2180;
+	
+	var pconst = -document.getElementById('kp').value;
+	var iconst = -document.getElementById('ki').value;
+	var dconst = -document.getElementById('kd').value;
+	
+	var k = math.multiply(b,iconst);
+	var sconst = math.subtract(math.multiply(b,pconst),psqr);
+	var sqrconst = math.multiply(b,dconst);
+	
+	var roots = math.polynomialRoot(k,sconst,sqrconst,1);
+	var pol1 = roots[0];
+	var pol2 = roots[1];
+	var pol3 = roots[2];
+	
+	var rhs_step = math.multiply(sqrv,b,iconst);
+	var rhs_pol1 = math.multiply(sqrv,b,math.add(math.multiply(dconst,math.pow(pol1,2)),math.multiply(pconst,pol1),iconst));
+	var rhs_pol2 = math.multiply(sqrv,b,math.add(math.multiply(dconst,math.pow(pol2,2)),math.multiply(pconst,pol2),iconst));
+	var rhs_pol3 = math.multiply(sqrv,b,math.add(math.multiply(dconst,math.pow(pol3,2)),math.multiply(pconst,pol3),iconst));
+	
+	var coeff1 = math.divide(rhs_step,math.multiply(math.subtract(0,pol1),math.subtract(0,pol2),math.subtract(0,pol3)));
+	var coeff2 = math.divide(rhs_pol1,math.multiply(pol1,math.subtract(pol1,pol2),math.subtract(pol1,pol3)));
+	var coeff3 = math.divide(rhs_pol2,math.multiply(pol2,math.subtract(pol2,pol1),math.subtract(pol2,pol3)));
+	var coeff4 = math.divide(rhs_pol3,math.multiply(pol3,math.subtract(pol3,pol1),math.subtract(pol3,pol2)));
 	
 	
+	//for( var t=0; t<=totalT; t+=0.1){
 	
-	for( var t=0; t<=totalT; t+=0.1){
-	
-	for( var t=0; t<= math.divide(totalT,4);t+=0.1 ){////20 sec is sample time
-	
-	var num1_pid = math.complex(-0.721536 , -0.356075 );
-	 var num2_pid = math.complex(-54.7083  , -45.4455  );
-	 var num3_pid = math.complex(0.608315,-0.793696);
-	 var num4_pid = math.complex(0,90.891);	 
-	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var scndcomp_pid = math.add(num3_pid,exp2_pid);
-	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
-	
-	var exp3_pid = math.pow(math.e,math.multiply(-1.31345 , t));
-	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);	
-	
+	//for( var t=0.1; t<= math.divide(totalT,4);t+=0.1 ){////20 sec is sample time
+	for (var nc = 0; nc < math.divide(cyclehlfs,2); nc+=1) {
+    for (var t = math.multiply(nc,tperiod); t <= math.multiply(math.add(math.multiply(nc,2),1),math.divide(totalT,cyclehlfs)); t++) {
+		
+	var part1 = coeff1;
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
 	y[t]= sqrv;//assuming step size 1v.Input plot
-	yop[t]= math.multiply(sqrv,math.add(totalfrstprt_pid,totalscndprt_pid,1));//assuming step size 1v.Output plot
+	yop[t]= (math.add(part1,part2,part3,part4)).re;
 	
 	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in m the gain is 143.14v/m,now in m
 	dataOPPoints.push({x:(t), y:(yop[t]/143.14)});///yop[t] was in v, in m the gain is 143.14v/m,now in m	 
 	 
 	 //document.write (totalscndprt);
 	 }
-	 for( var t= math.divide(totalT,4); t<= math.divide(totalT,2);t++){////20 sec is sample time
-	
+	 
+	 //for( var t= math.divide(totalT,4); t<= math.divide(totalT,2);t++){////20 sec is sample time
+	for (var t = math.multiply(math.add(math.multiply(nc,2),1),math.divide(totalT,cyclehlfs)); t<= math.multiply(2,math.divide(totalT,cyclehlfs),math.add(((2*nc)/2),1)); t++) {
+		
 	y[t]= 0;//assuming final value of 0v.Input plot
 	yop[t]=0;//assuming final value of 0v.Output plot
 	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in m the gain is 143.14v/m,now in m
@@ -940,29 +1146,16 @@ document.getElementById("result").style.display = "block";
 	 
 	 //document.write (totalscndprt);
 	 }
-	for( var t= math.divide(totalT,2); t<= math.divide(math.multiply(3,totalT),4);t+=0.1 ){////25 sec is sample time
+	 }
+	/* for( var t= math.divide(totalT,2); t<= math.divide(math.multiply(3,totalT),4);t+=0.1 ){////25 sec is sample time
 	
-	var num1_pid = math.complex(-0.721536 , -0.356075 );
-	 var num2_pid = math.complex(-54.7083  , -45.4455  );
-	 var num3_pid = math.complex(0.608315,-0.793696);
-	 var num4_pid = math.complex(0,90.891);	 
-	
-	var epow1_pid = math.multiply(num2_pid,t);
-	var exp1_pid  = math.pow(math.e,epow1_pid);
-	var frstcomp_pid = math.multiply(num1_pid,exp1_pid);
-
-    var epow2_pid = math.multiply(num4_pid,t);
-    var exp2_pid  = math.pow(math.e,epow2_pid);
-	var scndcomp_pid = math.add(num3_pid,exp2_pid);
-	
-	var totalfrstprt_pid = math.multiply(frstcomp_pid , scndcomp_pid);
-	
-	var exp3_pid = math.pow(math.e,math.multiply(-1.31345 , t));
-	var totalscndprt_pid = math.multiply(0.443072,exp3_pid);	
-	
+	var part1 = coeff1;
+	var part2 = math.multiply(coeff2,math.pow(math.e,math.multiply(pol1,t)));
+	var part3 = math.multiply(coeff3,math.pow(math.e,math.multiply(pol2,t)));
+	var part4 = math.multiply(coeff4,math.pow(math.e,math.multiply(pol3,t)));
 	
 	y[t]= sqrv;//assuming step size 1v.Input plot
-	yop[t]= math.multiply(sqrv,math.add(totalfrstprt_pid,totalscndprt_pid,1));//assuming step size 1v.Output plot
+	yop[t]= (math.add(part1,part2,part3,part4)).re;
 	
 	dataPoints.push({x:(t), y:(y[t]/143.14)});///y[t] was in v, in m the gain is 143.14v/m,now in m
 	dataOPPoints.push({x:(t), y:(yop[t]/143.14)});///yop[t] was in v, in m the gain is 143.14v/m,now in m	 
@@ -979,7 +1172,7 @@ document.getElementById("result").style.display = "block";
 	 //document.write (totalscndprt);
 	 } 
 	
-	}
+	} */
 	document.getElementById('plotbucket').style.display  = "block"; 
     document.getElementById('chartContainer').style.display  = "block"; 	
 	var chart = new CanvasJS.Chart("chartContainer",
@@ -993,11 +1186,11 @@ document.getElementById("result").style.display = "block";
 	  
 	  axisX:{
         interlacedColor: "#DFDEDE",
-        title: "Time(Sec)"
+        title: "Time (sec)"
       },
     axisY: [
 	      {/////output Y axis
-            title: "Amplitude(m)",
+            title: "Amplitude (m)",
 			
 			//maximum:0.03,
         },
@@ -1011,13 +1204,17 @@ document.getElementById("result").style.display = "block";
 		}
 		],
 	data: [
-      {        
+      {
+		showInLegend: true,
+		legendText: "Output Curve",
         type: "spline",
 		color:"black",
         dataPoints:dataOPPoints
 	
        },
-       {        
+       {
+		showInLegend: true,
+		legendText: "Input Curve",
         type: "spline",
 		color:"red",
         dataPoints:dataPoints
@@ -1046,49 +1243,14 @@ document.getElementById('sqrfreq').value = math.divide(1,math.divide(Ttime,2));
 
 }
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	///Refresh
 	function Refresh(){
 		
 	document.getElementById('plotbucket').style.display = "none";
+	document.getElementById('run_btn').src = "./images/run.png ";
 	document.getElementById('run_btn').style.display = "none";
 	document.getElementById('m_scope').style.display = "none";
 	document.getElementById('v_scope').style.display = "none";

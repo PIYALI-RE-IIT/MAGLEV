@@ -2,10 +2,10 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "Which of the following is a correct statement?",
+      "question": "1. Which of the following is a correct statement?",
       "answers": {
-        "a": "PI Controllers improves steady state response",
-        "b": "PD controllers improves transient response",
+        "a": "PI Controllers improve steady state response",
+        "b": "PD controllers improve transient response",
         "c": "All of the above",
         "d": "None of the above"
       },
@@ -13,29 +13,29 @@
       "difficulty": "beginner"
     },
     {
-      "question": "What is the relation between gain (g) and proportional band (p) in control system",
+      "question": "2. What is the relation between gain (g) and proportional band (p) in control system",
       "answers": {
         "a": " g = 100/p",
         "b": "g = p",
         "c": "g = p/100",
-        "d": "None of these"
+        "d": "None of the above"
       },
       "correctAnswer": "a",
       "difficulty": "beginner"
     },
     {
-      "question": "Which of the following is an example for actuators?",
+      "question": "3. Which of the following is an example of actuator?",
       "answers": {
         "a": "Microphone",
         "b": "Solenoid",
         "c": "Micro switch",
-        "d": "None of These"
+        "d": "None of the above"
       },
       "correctAnswer": "b",
       "difficulty": "beginner"
     },
     {
-      "question": "What is magnetic levitation?",
+      "question": "4. What is magnetic levitation?",
       "answers": {
         "a": "The use of magnetic fields to cause a train to rise above the rails",
         "b": "The use of fields to stretch a train above the rails",
@@ -46,7 +46,7 @@
       "difficulty": "beginner"
     },
     {
-      "question": "An disadvantage of implementing MAGLEV systems is it can be",
+      "question": "5. A disadvantage of implementing MAGLEV systems is, it can be",
       "answers": {
         "a": "Not safe",
         "b": "Not environmental friendly",
@@ -57,7 +57,7 @@
       "difficulty": "beginner"
     },
 	{
-      "question": "Increasing the proportional gain in PID block will __________ the rise time",
+      "question": "6. Increasing the proportional gain in PID block will __________ the rise time",
       "answers": {
         "a": "Increase",
         "b": "Not affect",
@@ -69,19 +69,19 @@
     },	
 	
 	{
-      "question": "Which one of the following constants is represented by K<sub>p</sub>?",
+      "question": "7. A proportional band setting of 175% is equivalent to a gain setting of __",
       "answers": {
-        "a": "Integral",
-        "b": "Derivative",
-        "c": "Proportional",
-        "d": "None of the above"
+        "a": "175",
+        "b": "0.756",
+        "c": "0.571",
+        "d": "1.32"
       },
       "correctAnswer": "c",
       "difficulty": "beginner"
     },
 	
 	{
-      "question": "Which one of the following controllers increases the order of the system by one? ",
+      "question": "8. Which one of the following controllers increases the order of the system by one? ",
       "answers": {
         "a": "P controller",
         "b": "PI controller",
@@ -94,11 +94,11 @@
 	
 	
 	{
-      "question": "The magnetic levitation is __________ ",
+      "question": "9. The magnetic levitation is __________ ",
       "answers": {
         "a": "A non contact technology",
         "b": "Not a non contact technology",
-        "c": "Both a,b",
+        "c": "Both of the above",
         "d": "None of the above"
       },
       "correctAnswer": "a",
@@ -106,12 +106,15 @@
     },
 	
 	{
-      "question": "Magnetic levitation uses principle of electromagnetism",
+      "question": "10. Strength of an electromagnet can be increased by",
       "answers": {
-        "a": "False",
-        "b": "True"
+        "a": "Increasing the cross-sectional area",
+        "b": "Increasing the number of turns",
+		"c": "Increasing current supply",
+        "d": "All of the above"
+		
       },
-      "correctAnswer": "b",
+      "correctAnswer": "d",
       "difficulty": "beginner"
     }
 	
